@@ -154,6 +154,28 @@ class CompanyView(View):
                 )
             except ObjectDoesNotExist:
                 return JsonResponse({'status': 'Not found company'}, status=404)
+    def post(self, request:HttpRequest):
+        """
+        input data --> dictionary:
+             {
+             'name': name,
+             'description': description,
+             'website': website
+             }
+        return result --> dictionary:
+            {'result':'ok'}
+        """
+        ans = request.body.decode()
+        data=json.loads(ans)
+        try:
+            name=data['name']
+            description=data['description']
+            website=data['website']
+        except:
+            return JsonResponse({'result':'bad data'})
+        company=Company(name=name, description=description, website=website)
+        company.save()
+        return JsonResponse({'result':'ok'})
 
 def get_company_products(request:HttpRequest,id:int):
     if request.method == 'GET':
@@ -176,5 +198,7 @@ def get_company_products(request:HttpRequest,id:int):
         except ObjectDoesNotExist:
             return JsonResponse({'status': 'Not found company'}, status=404)
     return JsonResponse({'result':'Method not found'})
+
+
 
             
