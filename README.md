@@ -50,8 +50,8 @@ The objective of this project is to create a simple e-commerce backend using Dja
 | GET | `/api/products/<id>` | Get a product by id |
 | POST | `/api/products` | Create a product |
 | POST | `api/products/<id>/update` | Update a product |
-| POST | `api/products/<id>/delete` | Delete a product |
-| GET | `/api/companies` | Get all companies |
+| GET | `api/products/<id>/delete` | Delete a product |
+| GET | `/api/companies/` | Get all companies |
 | GET | `/api/companies/<id>` | Get a company by id |
 | GET | `/api/companies/<id>/products` | Get all products by company id |
 | POST | `/api/companies` | Create a company |
