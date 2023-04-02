@@ -103,4 +103,14 @@ def update_product(request:HttpRequest,pk):
             return JsonResponse({'result':'Not existing product'}, status=404)
     else:
         return JsonResponse({'status': 'Method not allowed'})
+
+def delete_product(request:HttpRequest,pk):
+    if request.method == 'GET':
+        try:
+            product = Product.objects.get(id=pk)
+            product.delete()
+            return JsonResponse({'result':'deleted'})
+        except ObjectDoesNotExist:
+            return JsonResponse({'result':'Not existing product'}, status=404)
+    return JsonResponse({'status': 'Method not allowed'})
         
