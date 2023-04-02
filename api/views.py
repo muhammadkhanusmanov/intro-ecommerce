@@ -36,7 +36,15 @@ class ProductView(View):
         else:
             try:
                 product = Product.objects.get(id=id)
-                return JsonResponse(to_dict(product))
+                return JsonResponse(
+                    {
+                        'id': product.id,
+                        'name': product.name,
+                        'description': product.description,
+                        'color': product.color,
+                        'price': product.price,
+                        'company': product.company.id,
+                    })
             except ObjectDoesNotExist:
                 return JsonResponse({'status': 'does not exist'}, status=404)
     def post(self, request:HttpRequest):
@@ -115,37 +123,58 @@ def delete_product(request:HttpRequest,pk):
     return JsonResponse({'status': 'Method not allowed'})
 
 class CompanyView(View):
-        def get(self, request:HttpRequest,id=None):
-            if id==None:
-                """
-                input:
-                    nothing
-                return:
-                    get all companies
-                """
-                companies = Company.objects.all()
-                companies_list = []
-                for company in companies:
-                    companies_list.append(
-                        {
-                            'id': company.id,
-                            'name': company.name,
-                            'website': company.website
-                        }
-                    )
-                return JsonResponse(companies_list, safe=False)
-            else:
-                try:
-                    company = Company.objects.get(id=id)
-                    return JsonResponse(
-                        {
+    def get(self, request:HttpRequest,id=None):
+        if id==None:
+            """
+            input:
+                nothing
+            return:
+                get all companies
+            """
+            companies = Company.objects.all()
+            companies_list = []
+            for company in companies:
+                companies_list.append(
+                    {
                         'id': company.id,
                         'name': company.name,
                         'website': company.website
-                        }
-                    )
-                except ObjectDoesNotExist:
-                    return JsonResponse({'status': 'Not found company'}, status=404)
-                
-    
+                    }
+                )
+            return JsonResponse(companies_list, safe=False)
+        else:
+            try:
+                company = Company.objects.get(id=id)
+                return JsonResponse(
+                    {
+                    'id': company.id,
+                    'name': company.name,
+                    'website': company.website
+                    }
+                )
+            except ObjectDoesNotExist:
+                return JsonResponse({'status': 'Not found company'}, status=404)
 
+def get_company_products(request:HttpRequest,id:int):
+    if request.method == 'GET':
+        try:
+            company_id=Company.objects.get(id=id)
+            products=Product.objects.filter(company=company_id)
+            products_list=[]
+            for product in products:
+                products_list.append(
+                    {
+                        'id': product.id,
+                        'name': product.name,
+                        'description': product.description,
+                        'color': product.color,
+                        'price': product.price,
+                        'company': product.company.id,
+                    }
+                )
+            return JsonResponse(products_list, safe=False)
+        except ObjectDoesNotExist:
+            return JsonResponse({'status': 'Not found company'}, status=404)
+    return JsonResponse({'result':'Method not found'})
+
+            
