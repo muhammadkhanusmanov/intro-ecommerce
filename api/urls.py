@@ -4,7 +4,8 @@ from .views import (
     ProductView,
     update_product,
     delete_product,
-    CompanyView
+    CompanyView,
+    get_company_products
 )
 
 urlpatterns = [
@@ -14,5 +15,6 @@ urlpatterns = [
    path('products/<int:pk>/update/',update_product),
    path('products/<int:pk>/delete/',delete_product),
    path('companies/', CompanyView.as_view()),
-   path('companies/<int:id>',CompanyView.as_view())
+   path('companies/<int:id>',CompanyView.as_view()),
+   path('companies/<int:id>/products/',get_company_products)
 ]
