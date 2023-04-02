@@ -65,3 +65,42 @@ class ProductView(View):
         product.save()
         return JsonResponse({'result':'ok'})
 
+def update_product(request:HttpRequest,pk):
+    if request.method == 'POST':
+        """
+        input data --> dictionary:
+            {
+            'name': name,
+            'color': color,
+            'price': price,
+            'company': company_id
+            }
+        return --> dictionary
+        """
+        ans = request.body.decode()
+        data = json.loads(ans)
+        name = data['name']
+        color = data['color']
+        price = data['price']
+        company_id = data['company']
+        try:
+            product = Product.objects.get(id=pk)
+            product.name = name
+            product.color = color
+            product.price = price
+            product.company = Company.objects.get(id=company_id)
+            product.save()
+            """
+            return --> dictionary:
+                {'result':'ok'}
+            """
+            return JsonResponse({'result':'ok'})
+        except ObjectDoesNotExist:
+            """
+               return --> dictionary:
+                   {'result':'Not existing product'}
+            """
+            return JsonResponse({'result':'Not existing product'}, status=404)
+    else:
+        return JsonResponse({'status': 'Method not allowed'})
+        
