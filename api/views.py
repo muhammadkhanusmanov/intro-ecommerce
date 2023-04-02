@@ -10,16 +10,6 @@ from .models import (
     Category
 )
 
-def to_dict(product: Product) -> dict:
-    '''convert product obj to dict'''
-    return {
-        'id': product.id,
-        'name': product.name,
-        'description': product.description,
-        'color': product.color,
-        'price': product.price,
-        'company': product.company.id,
-    }
 
 
 class ProductView(View):
@@ -30,8 +20,18 @@ class ProductView(View):
             products = Product.objects.all()
 
             # list of products
-            products_list = [to_dict(product) for product in products]
-
+            products_list = []
+            for product in products:
+                products_list.append(
+                    {
+                        'id': product.id,
+                        'name': product.name,
+                        'description': product.description,
+                        'color': product.color,
+                        'price': product.price,
+                        'company': product.company.id,
+                    }
+                )
             return JsonResponse(products_list, safe=False)
         else:
             try:
@@ -113,4 +113,39 @@ def delete_product(request:HttpRequest,pk):
         except ObjectDoesNotExist:
             return JsonResponse({'result':'Not existing product'}, status=404)
     return JsonResponse({'status': 'Method not allowed'})
-        
+
+class CompanyView(View):
+        def get(self, request:HttpRequest,id=None):
+            if id==None:
+                """
+                input:
+                    nothing
+                return:
+                    get all companies
+                """
+                companies = Company.objects.all()
+                companies_list = []
+                for company in companies:
+                    companies_list.append(
+                        {
+                            'id': company.id,
+                            'name': company.name,
+                            'website': company.website
+                        }
+                    )
+                return JsonResponse(companies_list, safe=False)
+            else:
+                try:
+                    company = Company.objects.get(id=id)
+                    return JsonResponse(
+                        {
+                        'id': company.id,
+                        'name': company.name,
+                        'website': company.website
+                        }
+                    )
+                except ObjectDoesNotExist:
+                    return JsonResponse({'status': 'Not found company'}, status=404)
+                
+    
+
