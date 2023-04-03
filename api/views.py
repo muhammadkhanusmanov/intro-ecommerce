@@ -200,5 +200,68 @@ def get_company_products(request:HttpRequest,id:int):
     return JsonResponse({'result':'Method not found'})
 
 
+class CategoryView(View):
+    def get(self, request:HttpRequest,id=None):
+        if id==None:
+            """return --> All categories"""
+            categories = Category.objects.all()
+            categories_list = []
+            for category in categories:
+                categories_list.append(
+                    {
+                        'id': category.id,
+                        'name': category.name
+                    }
+                )
+            return JsonResponse(categories_list, safe=False)
+        else:
+            try:
+                category = Category.objects.get(id=id)
+                return JsonResponse(
+                    {
+                    'id': category.id,
+                    'name': category.name
+                    })
+            except ObjectDoesNotExist:
+                return JsonResponse({'result': 'Not found category'}, status=404)
+    def post(self, request:HttpRequest):
+        """
+        Create a new category
+        input data --> dictionary:
+             {
+             'name': name,
+             'products':[ids]
+             }
+        return result --> dictionary:
+            {'result':[added products ids]}
+        """
+        ans = request.body.decode()
+        data = json.loads(ans)
+        try:
+            name=data['name']
+            products=data['products']
+        except:
+            return JsonResponse({'result':'bad data'})
+        else:
+            category=Category(name=name)
+            category.save()
+            result = {'result': []}
+            for product_id in products:
+                try:
+                    product=Product.objects.get(id=product_id)
+                    category.products.add(product)
+                    category.save()
+                    result['result'].append(product_id)
+                except:
+                    pass
+            return JsonResponse(result, safe=False)
+        
+    
+            
+
+        
+
+
+
 
             
