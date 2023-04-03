@@ -26,7 +26,6 @@ class ProductView(View):
                     {
                         'id': product.id,
                         'name': product.name,
-                        'description': product.description,
                         'color': product.color,
                         'price': product.price,
                         'company': product.company.id,
@@ -40,7 +39,6 @@ class ProductView(View):
                     {
                         'id': product.id,
                         'name': product.name,
-                        'description': product.description,
                         'color': product.color,
                         'price': product.price,
                         'company': product.company.id,
@@ -258,6 +256,27 @@ class CategoryView(View):
         
     
             
+def get_product_category(request:HttpRequest,id:int):
+    if request.method == 'GET':
+        """return products including category"""
+        try:
+            category=Category.objects.get(id=id)
+            products=category.products.all()
+            products_list=[]
+            for product in products:
+                products_list.append(
+                    {
+                    'id':product.id,
+                    'name':product.name,
+                    'color':product.color,
+                    'price':product.price,
+                    'company':product.company.name
+                    }
+                )
+            return JsonResponse(products_list,safe=False)
+        except:
+            return JsonResponse({'result':'Note found catefory'})
+    return JsonResponse({'result':'Method not found'})
 
         
 
